@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
-import SignUpHeader from '../../components/SignUp/SignUpHeader'
-import SignUpFooter from '../../components/SignUp/SignUpFooter'
+import React, { useState } from 'react'
+import SignUpHeader from '../../components/signup/SignUpHeader'
+import SignUpFooter from '../../components/signup/SignUpFooter'
 
 const SignUp = () => {
   const [formData, setFormData] = useState({

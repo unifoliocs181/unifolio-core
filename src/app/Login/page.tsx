@@ -1,7 +1,7 @@
-import LoginHeader from '../../components/Login/LoginHeader'
-import LoginFooter from '../../components/Login/LoginFooter'
+import LoginHeader from '../../components/login/LoginHeader'
+import LoginFooter from '../../components/login/LoginFooter'
 
-const login = () => {
+export default function Login() {
   return (
     <div className="min-h-screen bg-unifolio-lightgray">
       <LoginHeader />
@@ -119,5 +119,3 @@ const login = () => {
     </div>
   )
 }
-
-export default login
