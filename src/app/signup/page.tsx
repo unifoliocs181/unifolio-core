@@ -3,8 +3,17 @@
 import React, { useState } from 'react'
 import SignUpHeader from '../../components/signup/SignUpHeader'
 import SignUpFooter from '../../components/signup/SignUpFooter'
+import { useRouter } from 'next/navigation'
+import { auth } from '../firebase'
+import {
+  useCreateUserWithEmailAndPassword,
+  useSendEmailVerification,
+} from 'react-firebase-hooks/auth'
 
 const SignUp = () => {
+  const router = useRouter()
+  const [createUser] = useCreateUserWithEmailAndPassword(auth)
+  const [sendEmailVerification] = useSendEmailVerification(auth)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -21,10 +30,41 @@ const SignUp = () => {
     }))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    console.log('Sign up data:', formData)
-    // Add sign up logic here
+
+    if (formData.password !== formData.confirmPassword) {
+      alert('Passwords do not match')
+      return
+    }
+
+    if (!formData.agreeToTerms) {
+      alert('Please agree to the Terms of Service and Privacy Policy')
+      return
+    }
+
+    if (formData.password.length < 6) {
+      alert('Password must be at least 6 characters long')
+      return
+    }
+
+    try {
+      const result = await createUser(formData.email, formData.password)
+      if (result?.user) {
+        await sendEmailVerification()
+        alert(
+          'Account created successfully! Please check your email to verify your account.'
+        )
+        router.push('/login')
+      } else {
+        alert('Failed to create account. Please try again.')
+      }
+    } catch (error: any) {
+      console.error('Sign up error:', error)
+      const errorMessage =
+        error?.message || 'Failed to create account. Please try again.'
+      alert(`Error: ${errorMessage}`)
+    }
   }
 
   return (

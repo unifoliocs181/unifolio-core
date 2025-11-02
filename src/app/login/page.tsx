@@ -1,7 +1,33 @@
+'use client'
 import LoginHeader from '../../components/login/LoginHeader'
 import LoginFooter from '../../components/login/LoginFooter'
+import { useRouter } from 'next/navigation'
+import { auth } from '../firebase'
+import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 
 export default function Login() {
+  const router = useRouter()
+  const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get('email') as string
+    const password = formData.get('password') as string
+
+    try {
+      const result = await signInWithEmailAndPassword(email, password)
+      if (result?.user) {
+        router.push('/dashboard')
+      } else {
+        alert('Failed to sign in. Please check your credentials.')
+      }
+    } catch (error: any) {
+      console.error('Sign in error:', error)
+      alert(`Error: ${error?.message || 'Failed to sign in'}`)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-unifolio-lightgray">
       <LoginHeader />
@@ -14,14 +40,16 @@ export default function Login() {
             Sign in to your account to continue
           </p>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-unifolio-dark font-medium mb-2">
                 Email
               </label>
               <input
                 type="email"
+                name="email"
                 placeholder="you@example.com"
+                required
                 className="w-full px-4 py-2 border border-unifolio-border rounded-lg focus:outline-none focus:ring-2 focus:ring-unifolio-gray"
               />
             </div>
@@ -32,7 +60,9 @@ export default function Login() {
               </label>
               <input
                 type="password"
+                name="password"
                 placeholder="••••••••"
+                required
                 className="w-full px-4 py-2 border border-unifolio-border rounded-lg focus:outline-none focus:ring-2 focus:ring-unifolio-gray"
               />
             </div>
