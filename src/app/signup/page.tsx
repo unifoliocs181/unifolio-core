@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import SignUpHeader from '../../components/signup/SignUpHeader'
 import SignUpFooter from '../../components/signup/SignUpFooter'
 import { useRouter } from 'next/navigation'
-import { auth } from '../firebase'
+import { auth, saveUserToDatabase } from '../firebase'
 import {
   useCreateUserWithEmailAndPassword,
   useSendEmailVerification,
@@ -51,6 +51,17 @@ const SignUp = () => {
     try {
       const result = await createUser(formData.email, formData.password)
       if (result?.user) {
+        // Save user data to Firestore
+        await saveUserToDatabase({
+          uid: result.user.uid,
+          email: result.user.email || formData.email,
+          fullName: formData.fullName,
+          signInMethod: 'email',
+          agreeToTerms: formData.agreeToTerms,
+          createdAt: new Date().toISOString(),
+          lastSignIn: new Date().toISOString(),
+        })
+
         await sendEmailVerification()
         alert(
           'Account created successfully! Please check your email to verify your account.'

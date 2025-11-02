@@ -2,7 +2,7 @@
 import LoginHeader from '../../components/login/LoginHeader'
 import LoginFooter from '../../components/login/LoginFooter'
 import { useRouter } from 'next/navigation'
-import { auth } from '../firebase'
+import { auth, saveUserToDatabase, getUserFromDatabase } from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 
 export default function Login() {
@@ -18,6 +18,15 @@ export default function Login() {
     try {
       const result = await signInWithEmailAndPassword(email, password)
       if (result?.user) {
+        // Update lastSignIn timestamp
+        const existingUserData = await getUserFromDatabase(result.user.uid)
+        if (existingUserData) {
+          await saveUserToDatabase({
+            ...existingUserData,
+            lastSignIn: new Date().toISOString(),
+          })
+        }
+
         router.push('/dashboard')
       } else {
         alert('Failed to sign in. Please check your credentials.')
