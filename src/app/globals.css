@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-unifolio-dark: #0a0a0a;
+  --color-unifolio-white: #ffffff;
+  --color-unifolio-gray: #ededed;
+  --color-unifolio-lightgray: #f5f5f5;
+  --color-unifolio-mediumgray: #6b7280;
+  --color-unifolio-border: #e5e7eb;
+  --font-unifolio-montserrat: 'Montserrat';
+}
