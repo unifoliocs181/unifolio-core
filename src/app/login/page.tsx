@@ -31,9 +31,14 @@ export default function Login() {
       } else {
         alert('Failed to sign in. Please check your credentials.')
       }
-    } catch (error: any) {
-      console.error('Sign in error:', error)
-      alert(`Error: ${error?.message || 'Failed to sign in'}`)
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('Sign in error:', error)
+        alert(`Error: ${error.message}`)
+      } else {
+        console.error('Sign in error:', error)
+        alert('Error: Failed to sign in')
+      }
     }
   }
 
