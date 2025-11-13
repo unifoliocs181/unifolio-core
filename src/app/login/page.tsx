@@ -66,9 +66,13 @@ export default function Login() {
         alert('Failed to sign in. Please check your credentials.')
       }
     } catch (error: unknown) {
-      console.error('Sign in error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to sign in'
-      alert(`Error: ${errorMessage}`)
+      if (error instanceof Error) {
+        console.error('Sign in error:', error)
+        alert(`Error: ${error.message}`)
+      } else {
+        console.error('Sign in error:', error)
+        alert('Error: Failed to sign in')
+      }
     }
   }
 

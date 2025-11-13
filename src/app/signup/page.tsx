@@ -106,7 +106,19 @@ const SignUp = () => {
       }
     } catch (error: unknown) {
       console.error('Sign up error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create account. Please try again.'
+      let errorMessage = 'Failed to create account. Please try again.'
+      if (error instanceof Error) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      } else if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof (error as { message?: unknown }).message === 'string'
+      ) {
+        errorMessage = (error as { message?: string }).message || errorMessage
+      }
       alert(`Error: ${errorMessage}`)
     }
   }
@@ -250,7 +262,7 @@ const SignUp = () => {
           <p className="text-center text-unifolio-mediumgray mt-6">
             Already have an account?{' '}
             <a
-              href="/Login"
+              href="/login"
               className="text-unifolio-dark font-semibold hover:underline"
             >
               Sign In
