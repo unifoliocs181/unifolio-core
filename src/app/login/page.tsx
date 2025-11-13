@@ -2,12 +2,46 @@
 import LoginHeader from '../../components/login/LoginHeader'
 import LoginFooter from '../../components/login/LoginFooter'
 import { useRouter } from 'next/navigation'
-import { auth, saveUserToDatabase, getUserFromDatabase } from '../firebase'
+import { auth, saveUserToDatabase, getUserFromDatabase, githubProvider } from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
+import { signInWithPopup } from 'firebase/auth'
 
 export default function Login() {
   const router = useRouter()
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+
+  const handleGitHubLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, githubProvider)
+      const user = result.user
+
+      let fullName = user.displayName || ''
+
+      if (!fullName && user.providerData && user.providerData[0]) {
+        fullName = user.providerData[0].displayName || ''
+      }
+
+      if (!fullName) {
+        fullName = user.email?.split('@')[0] || 'GitHub User'
+      }
+
+      await saveUserToDatabase({
+        uid: user.uid,
+        email: user.email || '',
+        fullName: fullName,
+        signInMethod: 'github',
+        agreeToTerms: true,
+        createdAt: new Date().toISOString(),
+        lastSignIn: new Date().toISOString(),
+      })
+
+      router.push('/dashboard')
+    } catch (error: unknown) {
+      console.error('GitHub login error:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to login with GitHub'
+      alert(`Error: ${errorMessage}`)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -31,9 +65,10 @@ export default function Login() {
       } else {
         alert('Failed to sign in. Please check your credentials.')
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign in error:', error)
-      alert(`Error: ${error?.message || 'Failed to sign in'}`)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to sign in'
+      alert(`Error: ${errorMessage}`)
     }
   }
 
@@ -106,9 +141,8 @@ export default function Login() {
           <div className="space-y-3">
             <button
               type="button"
-              disabled
-              className="w-full flex items-center justify-center gap-2 border border-unifolio-border bg-unifolio-white text-unifolio-dark py-2 rounded-lg font-semibold hover:bg-unifolio-lightgray transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              title="GitHub login - TBD"
+              onClick={handleGitHubLogin}
+              className="w-full flex items-center justify-center gap-2 border border-unifolio-border bg-unifolio-white text-unifolio-dark py-2 rounded-lg font-semibold hover:bg-unifolio-lightgray transition-colors"
             >
               <svg
                 className="w-5 h-5"
@@ -122,7 +156,7 @@ export default function Login() {
                   clipRule="evenodd"
                 ></path>
               </svg>
-              Login with GitHub - TBD
+              Login with GitHub
             </button>
 
             <button
