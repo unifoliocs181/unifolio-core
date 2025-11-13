@@ -1,14 +1,23 @@
 'use client'
 import LoginHeader from '../../components/login/LoginHeader'
 import LoginFooter from '../../components/login/LoginFooter'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { auth, saveUserToDatabase, getUserFromDatabase, githubProvider } from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import { signInWithPopup } from 'firebase/auth'
+import { useEffect } from 'react'
 
 export default function Login() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error === 'linkedin_not_configured') {
+      alert('LinkedIn login is not configured. Please add your LinkedIn credentials to .env.local file. See LINKEDIN_SETUP.md for instructions.')
+    }
+  }, [searchParams])
 
   const handleGitHubLogin = async () => {
     try {
@@ -41,6 +50,10 @@ export default function Login() {
       const errorMessage = error instanceof Error ? error.message : 'Failed to login with GitHub'
       alert(`Error: ${errorMessage}`)
     }
+  }
+
+  const handleLinkedInLogin = () => {
+    window.location.href = '/api/auth/linkedin'
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -165,9 +178,8 @@ export default function Login() {
 
             <button
               type="button"
-              disabled
-              className="w-full flex items-center justify-center gap-2 border border-unifolio-border bg-unifolio-white text-unifolio-dark py-2 rounded-lg font-semibold hover:bg-unifolio-lightgray transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
-              title="LinkedIn login - TBD"
+              onClick={handleLinkedInLogin}
+              className="w-full flex items-center justify-center gap-2 border border-unifolio-border bg-unifolio-white text-unifolio-dark py-2 rounded-lg font-semibold hover:bg-unifolio-lightgray transition-colors"
             >
               <svg
                 className="w-5 h-5"
@@ -177,7 +189,7 @@ export default function Login() {
               >
                 <path d="M16.337 0H3.663C1.641 0 0 1.6 0 3.578v12.844C0 18.4 1.641 20 3.663 20h12.674C18.359 20 20 18.4 20 16.422V3.578C20 1.6 18.359 0 16.337 0zM5.957 16.917H2.97V7.543h2.987v9.374zM4.464 6.217c-.957 0-1.73-.77-1.73-1.72 0-.95.773-1.72 1.73-1.72.956 0 1.73.77 1.73 1.72 0 .95-.774 1.72-1.73 1.72zm12.453 10.7h-2.987v-4.552c0-1.084-.387-1.823-1.357-1.823-.74 0-1.18.497-1.374 978-.07.002-.07.013-.07.024v5.351H7.72V7.543h2.87v1.279c.398-.613 1.11-1.484 2.7-1.484 1.973 0 3.454 1.288 3.454 4.058v5.521z"></path>
               </svg>
-              Login with LinkedIn - TBD
+              Login with LinkedIn
             </button>
           </div>
 
