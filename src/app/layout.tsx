@@ -1,5 +1,6 @@
 // app/auth/layout.tsx
 import './globals.css'
+import Script from 'next/script'
 // import Footer from "@/components/Footer";
 import { Montserrat } from 'next/font/google'
 // import { ReactQueryClientProvider } from "@/utils/react-query";
@@ -25,7 +26,13 @@ export default function AuthLayout({
 }) {
   return (
     <html lang="en">
-      <body className={montserrat.className}>{children}</body>
+      <body className={montserrat.className}>
+        {children}
+        <Script
+          src="https://www.google.com/recaptcha/enterprise.js?render=6Lf8RhIsAAAAABkY54lb_LfxsRMPNOQleAdsIKYX"
+          strategy="lazyOnload"
+        />
+      </body>
     </html>
   )
 }

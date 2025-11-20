@@ -36,13 +36,13 @@ export default function Login() {
 
       // Check if user data already exists (might be from LinkedIn login)
       const existingUserData = await getUserFromDatabase(user.uid)
-      
+
       if (existingUserData) {
         // Update existing user with GitHub sign-in method and last sign-in time
         await saveUserToDatabase({
           ...existingUserData,
-          signInMethod: existingUserData.signInMethod.includes('github') 
-            ? existingUserData.signInMethod 
+          signInMethod: existingUserData.signInMethod.includes('github')
+            ? existingUserData.signInMethod
             : `${existingUserData.signInMethod},github`,
           lastSignIn: new Date().toISOString(),
         })
@@ -73,14 +73,39 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formData = new FormData(e.currentTarget)
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
     const email = formData.get('email') as string
     const password = formData.get('password') as string
 
     try {
+      const token = await new Promise<string>((resolve, reject) => {
+        if (typeof window !== 'undefined' && (window as any).grecaptcha?.enterprise) {
+          (window as any).grecaptcha.enterprise.ready(async () => {
+            try {
+              const recaptchaToken = await (window as any).grecaptcha.enterprise.execute(
+                '6Lf8RhIsAAAAABkY54lb_LfxsRMPNOQleAdsIKYX',
+                { action: 'LOGIN' }
+              )
+              resolve(recaptchaToken)
+            } catch (err) {
+              reject(err)
+            }
+          })
+        } else {
+          reject(new Error('reCAPTCHA not loaded'))
+        }
+      })
+
+      console.log('reCAPTCHA token:', token)
+    } catch (recaptchaError) {
+      console.error('reCAPTCHA error:', recaptchaError)
+    }
+
+    try {
       const result = await signInWithEmailAndPassword(email, password)
       if (result?.user) {
-        // Update lastSignIn timestamp
         const existingUserData = await getUserFromDatabase(result.user.uid)
         if (existingUserData) {
           await saveUserToDatabase({
@@ -150,7 +175,7 @@ export default function Login() {
               </label>
               <a
                 href="#"
-                className="text-unifolio-gray hover:text-unifolio-dark"
+                className="text-text-unifolio-dark:"
               >
                 Forgot password?
               </a>
