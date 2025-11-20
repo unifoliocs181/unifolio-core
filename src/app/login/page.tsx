@@ -4,13 +4,16 @@ import LoginFooter from '../../components/login/LoginFooter'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { auth, saveUserToDatabase, getUserFromDatabase, githubProvider, checkEmailExists } from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
-import { signInWithPopup, linkWithCredential, GithubAuthProvider } from 'firebase/auth'
-import { useEffect } from 'react'
+import { signInWithPopup, linkWithCredential, GithubAuthProvider, sendPasswordResetEmail } from 'firebase/auth'
+import { useEffect, useState } from 'react'
 
 export default function Login() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
+  const [showForgotPassword, setShowForgotPassword] = useState(false)
+  const [resetEmail, setResetEmail] = useState('')
+  const [isResetting, setIsResetting] = useState(false)
 
   useEffect(() => {
     const error = searchParams.get('error')
@@ -69,6 +72,38 @@ export default function Login() {
 
   const handleLinkedInLogin = () => {
     window.location.href = '/api/auth/linkedin'
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    if (!resetEmail) {
+      alert('Please enter your email address')
+      return
+    }
+
+    setIsResetting(true)
+    try {
+      await sendPasswordResetEmail(auth, resetEmail)
+      alert('Password reset email sent! Please check your inbox.')
+      setShowForgotPassword(false)
+      setResetEmail('')
+    } catch (error: unknown) {
+      console.error('Password reset error:', error)
+      if (error instanceof Error) {
+        if (error.message.includes('user-not-found')) {
+          alert('No account found with this email address.')
+        } else if (error.message.includes('invalid-email')) {
+          alert('Please enter a valid email address.')
+        } else {
+          alert(`Error: ${error.message}`)
+        }
+      } else {
+        alert('Failed to send password reset email. Please try again.')
+      }
+    } finally {
+      setIsResetting(false)
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -148,12 +183,13 @@ export default function Login() {
                 <input type="checkbox" className="rounded" />
                 <span className="text-unifolio-mediumgray">Remember me</span>
               </label>
-              <a
-                href="#"
+              <button
+                type="button"
+                onClick={() => setShowForgotPassword(true)}
                 className="text-unifolio-gray hover:text-unifolio-dark"
               >
                 Forgot password?
-              </a>
+              </button>
             </div>
 
             <button
@@ -220,6 +256,68 @@ export default function Login() {
         </div>
       </div>
       <LoginFooter />
+      
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-unifolio-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-unifolio-dark">Reset Password</h3>
+              <button
+                onClick={() => {
+                  setShowForgotPassword(false)
+                  setResetEmail('')
+                }}
+                className="text-unifolio-mediumgray hover:text-unifolio-dark"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <p className="text-unifolio-mediumgray mb-4">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+            
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div>
+                <label className="block text-unifolio-dark font-medium mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={resetEmail}
+                  onChange={(e) => setResetEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
+                  className="w-full px-4 py-2 border border-unifolio-border rounded-lg focus:outline-none focus:ring-2 focus:ring-unifolio-gray"
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowForgotPassword(false)
+                    setResetEmail('')
+                  }}
+                  className="flex-1 px-4 py-2 border border-unifolio-border text-unifolio-dark rounded-lg font-semibold hover:bg-unifolio-lightgray transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isResetting}
+                  className="flex-1 px-4 py-2 bg-unifolio-dark text-unifolio-white rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
+                  {isResetting ? 'Sending...' : 'Send Reset Link'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
