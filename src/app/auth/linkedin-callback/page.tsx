@@ -2,8 +2,8 @@
 
 import { useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { auth, saveUserToDatabase } from '../../firebase'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { auth, saveUserToDatabase, getUserFromDatabase } from '../../firebase'
+import { signInWithCustomToken, updateProfile } from 'firebase/auth'
 
 export default function LinkedInCallback() {
     const router = useRouter()
@@ -19,42 +19,46 @@ export default function LinkedInCallback() {
                 }
 
                 const profile = JSON.parse(decodeURIComponent(data))
-                const linkedInPassword = `LI_${profile.sub}_UNIFIED_PASSWORD`
-                let userCredential
-
-                try {
-                    userCredential = await createUserWithEmailAndPassword(auth, profile.email, linkedInPassword)
-                    await updateProfile(userCredential.user, {
-                        displayName: profile.fullName || profile.name,
-                        photoURL: profile.picture || null,
-                    })
-                } catch (createError: unknown) {
-                    if (createError instanceof Error && createError.message.includes('email-already-in-use')) {
-                        try {
-                            userCredential = await signInWithEmailAndPassword(auth, profile.email, linkedInPassword)
-                        } catch (signInError) {
-                            console.error('Sign in error:', signInError)
-                            router.push('/login?error=email_used_different_method')
-                            return
-                        }
-                    } else {
-                        throw createError
-                    }
+                
+                if (!profile.customToken) {
+                    router.push('/login?error=missing_custom_token')
+                    return
                 }
+                
+                // Sign in with custom token (this will use existing account if email matches)
+                const userCredential = await signInWithCustomToken(auth, profile.customToken)
+                const user = userCredential.user
 
-                if (!userCredential) {
-                    throw new Error('Failed to authenticate user')
-                }
-
-                await saveUserToDatabase({
-                    uid: userCredential.user.uid,
-                    email: profile.email,
-                    fullName: profile.fullName || profile.name,
-                    signInMethod: 'linkedin',
-                    agreeToTerms: true,
-                    createdAt: new Date().toISOString(),
-                    lastSignIn: new Date().toISOString(),
+                // Update profile with LinkedIn data
+                await updateProfile(user, {
+                    displayName: profile.fullName || profile.name,
+                    photoURL: profile.picture || null,
                 })
+
+                // Check if user data already exists (might be from GitHub login)
+                const existingUserData = await getUserFromDatabase(user.uid)
+                
+                if (existingUserData) {
+                    // Update existing user with LinkedIn sign-in method and last sign-in time
+                    await saveUserToDatabase({
+                        ...existingUserData,
+                        signInMethod: existingUserData.signInMethod.includes('linkedin') 
+                            ? existingUserData.signInMethod 
+                            : `${existingUserData.signInMethod},linkedin`,
+                        lastSignIn: new Date().toISOString(),
+                    })
+                } else {
+                    // Create new user entry
+                    await saveUserToDatabase({
+                        uid: user.uid,
+                        email: profile.email,
+                        fullName: profile.fullName || profile.name,
+                        signInMethod: 'linkedin',
+                        agreeToTerms: true,
+                        createdAt: new Date().toISOString(),
+                        lastSignIn: new Date().toISOString(),
+                    })
+                }
 
                 router.push('/dashboard')
             } catch (error) {

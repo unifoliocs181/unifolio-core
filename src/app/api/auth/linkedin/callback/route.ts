@@ -40,11 +40,29 @@ export async function GET(request: NextRequest) {
     
     const profile = await profileResponse.json()
     
+    // Generate custom token for linking accounts
+    const tokenRequest = await fetch(`${origin}/api/auth/create-custom-token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: profile.email,
+        displayName: profile.name,
+        providerId: 'linkedin.com',
+      }),
+    })
+    
+    if (!tokenRequest.ok) {
+      throw new Error('Failed to create custom token')
+    }
+    
+    const { customToken } = await tokenRequest.json()
+    
     const userData = encodeURIComponent(JSON.stringify({
       email: profile.email,
       fullName: profile.name,
       picture: profile.picture,
       sub: profile.sub,
+      customToken,
     }))
     
     return NextResponse.redirect(`${origin}/auth/linkedin-callback?data=${userData}`)

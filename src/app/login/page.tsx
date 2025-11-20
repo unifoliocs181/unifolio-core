@@ -2,9 +2,9 @@
 import LoginHeader from '../../components/login/LoginHeader'
 import LoginFooter from '../../components/login/LoginFooter'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { auth, saveUserToDatabase, getUserFromDatabase, githubProvider } from '../firebase'
+import { auth, saveUserToDatabase, getUserFromDatabase, githubProvider, checkEmailExists } from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
-import { signInWithPopup } from 'firebase/auth'
+import { signInWithPopup, linkWithCredential, GithubAuthProvider } from 'firebase/auth'
 import { useEffect } from 'react'
 
 export default function Login() {
@@ -34,15 +34,30 @@ export default function Login() {
         fullName = user.email?.split('@')[0] || 'GitHub User'
       }
 
-      await saveUserToDatabase({
-        uid: user.uid,
-        email: user.email || '',
-        fullName: fullName,
-        signInMethod: 'github',
-        agreeToTerms: true,
-        createdAt: new Date().toISOString(),
-        lastSignIn: new Date().toISOString(),
-      })
+      // Check if user data already exists (might be from LinkedIn login)
+      const existingUserData = await getUserFromDatabase(user.uid)
+      
+      if (existingUserData) {
+        // Update existing user with GitHub sign-in method and last sign-in time
+        await saveUserToDatabase({
+          ...existingUserData,
+          signInMethod: existingUserData.signInMethod.includes('github') 
+            ? existingUserData.signInMethod 
+            : `${existingUserData.signInMethod},github`,
+          lastSignIn: new Date().toISOString(),
+        })
+      } else {
+        // Create new user entry
+        await saveUserToDatabase({
+          uid: user.uid,
+          email: user.email || '',
+          fullName: fullName,
+          signInMethod: 'github',
+          agreeToTerms: true,
+          createdAt: new Date().toISOString(),
+          lastSignIn: new Date().toISOString(),
+        })
+      }
 
       router.push('/dashboard')
     } catch (error: unknown) {
