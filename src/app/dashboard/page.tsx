@@ -12,9 +12,11 @@ export default function Dashboard() {
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loadingUserData, setLoadingUserData] = useState(true)
   const [jobDescription, setJobDescription] = useState('')
-  const [resumeFile, setResumeFile] = useState<File | null>(null)
+  const [currResume, setCurrResume] = useState<File | null>(null)
+  const [linkedInProfile, setLinkedInProfile] = useState<File | null>(null)
   const [showModal, setShowModal] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const currResumeInputRef = useRef<HTMLInputElement>(null)
+  const linkedInProfileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -39,7 +41,7 @@ export default function Dashboard() {
     fetchUserData()
   }, [user])
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCurrResumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
       const maxSize = 10 * 1024 * 1024
@@ -47,7 +49,19 @@ export default function Dashboard() {
         alert('File size must be less than 10MB')
         return
       }
-      setResumeFile(file)
+      setCurrResume(file)
+    }
+  }
+
+  const handleLinkedInProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      const maxSize = 10 * 1024 * 1024
+      if (file.size > maxSize) {
+        alert('File size must be less than 10MB')
+        return
+      }
+      setLinkedInProfile(file)
     }
   }
 
@@ -100,53 +114,23 @@ export default function Dashboard() {
           <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
               <h2 className="text-xl font-semibold text-white mb-4">
-                LinkedIn Integration
+                Upload LinkedIn Profile PDF
               </h2>
               <p className="text-sm text-gray-400 mb-4">
-                Connect your LinkedIn account to import your professional
-                information
-              </p>
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 flex items-center justify-center min-h-[150px] bg-gray-900/50">
-                <div className="text-center">
-                  <svg
-                    className="mx-auto h-12 w-12 text-gray-500 mb-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-                    />
-                  </svg>
-                  <p className="text-sm text-gray-500">
-                    LinkedIn integration coming soon
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
-              <h2 className="text-xl font-semibold text-white mb-4">
-                Upload Current Resume
-              </h2>
-              <p className="text-sm text-gray-400 mb-4">
-                Upload your existing resume (Max 10MB)
+                Upload your LinkedIn Profile as a PDF. Go to your profile, click &quot;More&quot;, and select &quot;Save to PDF&quot;.
               </p>
               <input
                 type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
+                ref={linkedInProfileInputRef}
+                onChange={handleLinkedInProfileChange}
                 accept=".pdf,.doc,.docx"
                 className="hidden"
               />
               <button
-                onClick={() => fileInputRef.current?.click()}
-                className="w-full border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors bg-gray-900/50 cursor-pointer"
+                onClick={() => linkedInProfileInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-gray-600 rounded-lg p-8 hover:border-gray-500 transition-colors bg-gray-900/50 cursor-pointer min-h-[150px]"
               >
-                {resumeFile ? (
+                {linkedInProfile ? (
                   <div className="flex items-center justify-center space-x-2">
                     <svg
                       className="h-6 w-6 text-green-500"
@@ -163,10 +147,78 @@ export default function Dashboard() {
                     </svg>
                     <div className="text-left">
                       <p className="text-sm font-medium text-white">
-                        {resumeFile.name}
+                        {linkedInProfile.name}
                       </p>
                       <p className="text-xs text-gray-400">
-                        {(resumeFile.size / 1024 / 1024).toFixed(2)} MB
+                        {(linkedInProfile.size / 1024 / 1024).toFixed(2)} MB
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center">
+                    <svg
+                      className="h-10 w-10 text-gray-500 mb-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                      />
+                    </svg>
+                    <p className="text-sm font-medium text-white mb-1">
+                      Click to upload document
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      PDF, DOC, or DOCX (Max 10MB)
+                    </p>
+                  </div>
+                )}
+              </button>
+            </div>
+
+            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border border-gray-700">
+              <h2 className="text-xl font-semibold text-white mb-4">
+                Upload Current Resume
+              </h2>
+              <p className="text-sm text-gray-400 mb-4">
+                Upload your existing resume (Max 10MB)
+              </p>
+              <input
+                type="file"
+                ref={currResumeInputRef}
+                onChange={handleCurrResumeChange}
+                accept=".pdf,.doc,.docx"
+                className="hidden"
+              />
+              <button
+                onClick={() => currResumeInputRef.current?.click()}
+                className="w-full border-2 border-dashed border-gray-600 rounded-lg p-6 hover:border-gray-500 transition-colors bg-gray-900/50 cursor-pointer"
+              >
+                {currResume ? (
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg
+                      className="h-6 w-6 text-green-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-sm font-medium text-white">
+                        {currResume.name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {(currResume.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
                   </div>
