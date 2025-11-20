@@ -31,6 +31,10 @@ export default function DashboardHeader({
   }, [])
 
   const handleSignOut = async () => {
+    localStorage.removeItem('rememberedEmail')
+    localStorage.removeItem('rememberedPassword')
+    localStorage.removeItem('lastLoginMethod')
+    localStorage.removeItem('rememberMe')
     await auth.signOut()
     router.push('/login')
   }
