@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
-import { getAuth } from 'firebase/auth'
+import { getAuth, GithubAuthProvider, fetchSignInMethodsForEmail } from 'firebase/auth'
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -22,6 +22,11 @@ const app = initializeApp(firebaseConfig)
 
 export const auth = getAuth(app)
 export const db = getFirestore(app)
+export const githubProvider = new GithubAuthProvider()
+
+// Request user's profile information including name
+githubProvider.addScope('user:email')
+githubProvider.addScope('read:user')
 
 // User data interface
 export interface UserData {
@@ -60,5 +65,16 @@ export const getUserFromDatabase = async (uid: string) => {
   } catch (error) {
     console.error('Error getting user data:', error)
     throw error
+  }
+}
+
+// Check if an email is already registered
+export const checkEmailExists = async (email: string) => {
+  try {
+    const signInMethods = await fetchSignInMethodsForEmail(auth, email)
+    return signInMethods.length > 0 ? signInMethods : null
+  } catch (error) {
+    console.error('Error checking email:', error)
+    return null
   }
 }

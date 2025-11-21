@@ -4,16 +4,14 @@ import React, { useState } from 'react'
 import SignUpHeader from '../../components/signup/SignUpHeader'
 import SignUpFooter from '../../components/signup/SignUpFooter'
 import { useRouter } from 'next/navigation'
-import { auth, saveUserToDatabase } from '../firebase'
+import { auth, saveUserToDatabase, getUserFromDatabase } from '../firebase'
 import {
-  useCreateUserWithEmailAndPassword,
   useSendEmailVerification,
 } from 'react-firebase-hooks/auth'
+import { signInWithCustomToken, sendEmailVerification as firebaseSendEmailVerification } from 'firebase/auth'
 
 const SignUp = () => {
   const router = useRouter()
-  const [createUser] = useCreateUserWithEmailAndPassword(auth)
-  const [sendEmailVerification] = useSendEmailVerification(auth)
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -49,31 +47,79 @@ const SignUp = () => {
     }
 
     try {
-      const result = await createUser(formData.email, formData.password)
-      if (result?.user) {
-        // Save user data to Firestore
+      // Call API to create account or link email/password to existing account
+      const response = await fetch('/api/auth/link-email-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          fullName: formData.fullName,
+        }),
+      })
+
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.error || 'Failed to create account')
+      }
+
+      const { customToken, uid, isNewUser } = await response.json()
+
+      // Sign in with custom token
+      const userCredential = await signInWithCustomToken(auth, customToken)
+      const user = userCredential.user
+
+      // Check if user data already exists (might be from GitHub/LinkedIn login)
+      const existingUserData = await getUserFromDatabase(uid)
+
+      if (existingUserData) {
+        // Update existing user with email sign-in method
         await saveUserToDatabase({
-          uid: result.user.uid,
-          email: result.user.email || formData.email,
+          ...existingUserData,
+          fullName: formData.fullName || existingUserData.fullName,
+          signInMethod: existingUserData.signInMethod.includes('email')
+            ? existingUserData.signInMethod
+            : `${existingUserData.signInMethod},email`,
+          agreeToTerms: true,
+          lastSignIn: new Date().toISOString(),
+        })
+      } else {
+        // Create new user entry
+        await saveUserToDatabase({
+          uid: user.uid,
+          email: user.email || formData.email,
           fullName: formData.fullName,
           signInMethod: 'email',
           agreeToTerms: formData.agreeToTerms,
           createdAt: new Date().toISOString(),
           lastSignIn: new Date().toISOString(),
         })
-
-        await sendEmailVerification()
-        alert(
-          'Account created successfully! Please check your email to verify your account.'
-        )
-        router.push('/login')
-      } else {
-        alert('Failed to create account. Please try again.')
       }
-    } catch (error: any) {
+
+      // Send email verification
+      await firebaseSendEmailVerification(user)
+
+      alert(
+        isNewUser
+          ? 'Account created successfully! Please check your email to verify your account.'
+          : 'Email/password added to your existing account! Please check your email to verify.'
+      )
+      router.push('/login')
+    } catch (error: unknown) {
       console.error('Sign up error:', error)
-      const errorMessage =
-        error?.message || 'Failed to create account. Please try again.'
+      let errorMessage = 'Failed to create account. Please try again.'
+      if (error instanceof Error) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      } else if (
+        error &&
+        typeof error === 'object' &&
+        'message' in error &&
+        typeof (error as { message?: unknown }).message === 'string'
+      ) {
+        errorMessage = (error as { message?: string }).message || errorMessage
+      }
       alert(`Error: ${errorMessage}`)
     }
   }
@@ -191,7 +237,7 @@ const SignUp = () => {
           <p className="text-center text-unifolio-mediumgray mt-6">
             Already have an account?{' '}
             <a
-              href="/Login"
+              href="/login"
               className="text-unifolio-dark font-semibold hover:underline"
             >
               Sign In
