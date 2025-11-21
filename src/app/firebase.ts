@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
 import { getAuth, GithubAuthProvider, fetchSignInMethodsForEmail } from 'firebase/auth'
-import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore'
+import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -76,5 +76,17 @@ export const checkEmailExists = async (email: string) => {
   } catch (error) {
     console.error('Error checking email:', error)
     return null
+  }
+}
+
+// Delete user data from Firestore
+export const deleteUserFromDatabase = async (uid: string) => {
+  try {
+    const userRef = doc(db, 'users', uid)
+    await deleteDoc(userRef)
+    console.log('User data deleted successfully')
+  } catch (error) {
+    console.error('Error deleting user data:', error)
+    throw error
   }
 }

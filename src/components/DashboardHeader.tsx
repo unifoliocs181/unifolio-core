@@ -104,13 +104,7 @@ export default function DashboardHeader({
                   </p>
                 </div>
                 <a
-                  href="#"
-                  className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
-                >
-                  Profile
-                </a>
-                <a
-                  href="#"
+                  href="/user/settings"
                   className="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors"
                 >
                   Settings
