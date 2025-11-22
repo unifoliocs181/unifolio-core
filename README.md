@@ -31,6 +31,10 @@ As mentioned in our project proposal, one main feature we want to implement with
 
 In general, this is the kind of procedure that will be performed by the MVC design once a user requests something. The most involved a user will have to be while interacting with Unifolio is adding (or autofilling) their resume information onto our website. Here, the controller will take all the user input and send it to the model module, where it will be parsed, sorted, and put into resume “sections”.
 
+#### Updated Unifolio Architecture
+
+<img width="1112" height="341" alt="UnifolioArchitecture drawio" src="https://github.com/user-attachments/assets/530a5599-05f9-4621-9f8a-8d50433bb327" />
+
 #### UML Class Diagram
 
 The class diagram below describes how user information will be represented and used within Unifolio’s model module. It is also important to note that this is a high-level representation of the data, and is also subject to change as we add more features to Unifolio.
