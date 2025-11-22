@@ -19,6 +19,28 @@ db/ # Database connections and models
 utils/ # Helper functions
 types/ # TypeScript type definitions
 
+## Project Motivation
+
+When applying for jobs, a common issue that comes up is trying to tailor your resume to a certain job title and description, which can be very tedious the more jobs you apply to. On top of that, people may have projects that they showcase on multiple sites, such as LinkedIn and GitHub, but it can also be tedious to condense all that info into one single portfolio. With Unifolio, we aim to address both these issues by automatically creating a resume and portfolio from a user’s LinkedIn and GitHub profile. On top of that, our app will also prioritize certain experiences and skills based on the type of job that users want to apply to.
+
+## Functional Requirements
+
+The core functionality of our app will be generating a resume and portfolio based on scraping data from a user’s LinkedIn and Github profiles with their permission.
+
+Once the user allows access to their profiles, the app will make API requests to LinkedIn and GitHub and gather data from their profiles. The LinkedIn data will be useful for the following:
+- The user’s name and contact information, if allowed by the user
+- Experience section, including job history and projects
+- Education section, including degrees and certifications
+- Professional Organizations, if applicable
+- Skills section, which will categorize soft and hard skills
+- The GitHub data will primarily be useful for the project section of a resume, as well as most of the portfolio information.
+
+The resume will be generated in LaTeX and can be downloaded as a PDF. We also aim to provide the additional features:
+- Letting users choose which information to include in the document
+- Condensing the PDF into one single page, although this may require users to omit certain info or entire sections
+- Automatically sort sections by most relevant and most recent, depending on what kind of job the user wants to apply to
+- Allowing users to customize their resumes, but this may be limited to only fonts
+
 ## Architecture and Design
 
 #### Model-View-Controller Architecture
