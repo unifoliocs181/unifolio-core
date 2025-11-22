@@ -19,12 +19,9 @@ if (!admin.apps.length) {
 export async function POST(request: NextRequest) {
   try {
     const { email, displayName, providerId } = await request.json()
-    
+
     if (!email) {
-      return NextResponse.json(
-        { error: 'Email is required' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 })
     }
 
     let user
@@ -41,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update provider data if needed
-    const existingProviders = user.providerData.map(p => p.providerId)
+    const existingProviders = user.providerData.map((p) => p.providerId)
     if (!existingProviders.includes(providerId)) {
       // Note: We can't directly add providers via Admin SDK
       // The linking will happen on the client side
@@ -50,8 +47,8 @@ export async function POST(request: NextRequest) {
 
     // Generate custom token
     const customToken = await admin.auth().createCustomToken(user.uid)
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       customToken,
       uid: user.uid,
       email: user.email,

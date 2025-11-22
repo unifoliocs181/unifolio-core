@@ -11,13 +11,13 @@ export default function Dashboard() {
   const [user, loading] = useAuthState(auth)
   const [userData, setUserData] = useState<UserData | null>(null)
   const [loadingUserData, setLoadingUserData] = useState(true)
-  
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
     }
   }, [user, loading, router])
-  
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
@@ -42,21 +42,21 @@ export default function Dashboard() {
       </div>
     )
   }
-    if (!user) {
+  if (!user) {
     return null
   }
 
-    return (
+  return (
     <div className="min-h-screen bg-unifolio-lightgray">
       <LoginHeader />
-        <div className="flex items-center justify-center py-16 px-4">
-          <div className="w-full max-w-2xl bg-unifolio-white rounded-lg shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-unifolio-dark mb-2">
+      <div className="flex items-center justify-center py-16 px-4">
+        <div className="w-full max-w-2xl bg-unifolio-white rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-bold text-unifolio-dark mb-2">
             Welcome back, {userData?.fullName || 'User'}!
-            </h2>
-          </div>
+          </h2>
         </div>
+      </div>
       <LoginFooter />
     </div>
-    )
+  )
 }

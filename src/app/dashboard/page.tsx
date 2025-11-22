@@ -53,7 +53,9 @@ export default function Dashboard() {
     }
   }
 
-  const handleLinkedInProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLinkedInProfileChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0]
     if (file) {
       const maxSize = 10 * 1024 * 1024
@@ -117,7 +119,8 @@ export default function Dashboard() {
                 Upload LinkedIn Profile PDF
               </h2>
               <p className="text-sm text-gray-400 mb-4">
-                Upload your LinkedIn Profile as a PDF. Go to your profile, click &quot;More&quot;, and select &quot;Save to PDF&quot;.
+                Upload your LinkedIn Profile as a PDF. Go to your profile, click
+                &quot;More&quot;, and select &quot;Save to PDF&quot;.
               </p>
               <input
                 type="file"
@@ -257,7 +260,6 @@ export default function Dashboard() {
           >
             Generate Resume
           </button>
-          
         </div>
       </main>
 

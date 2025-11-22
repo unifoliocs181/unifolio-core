@@ -2,7 +2,12 @@
 import LoginHeader from '../../components/login/LoginHeader'
 import LoginFooter from '../../components/login/LoginFooter'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { auth, saveUserToDatabase, getUserFromDatabase, githubProvider } from '../firebase'
+import {
+  auth,
+  saveUserToDatabase,
+  getUserFromDatabase,
+  githubProvider,
+} from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import { signInWithPopup, sendPasswordResetEmail } from 'firebase/auth'
 import { useEffect, useState } from 'react'
@@ -28,7 +33,10 @@ export default function Login() {
       if (wasRemembered && savedEmail && savedPassword) {
         setIsAutoLoggingIn(true)
         try {
-          const result = await signInWithEmailAndPassword(savedEmail, savedPassword)
+          const result = await signInWithEmailAndPassword(
+            savedEmail,
+            savedPassword
+          )
           if (result?.user) {
             const existingUserData = await getUserFromDatabase(result.user.uid)
             if (existingUserData) {
@@ -59,7 +67,9 @@ export default function Login() {
   useEffect(() => {
     const error = searchParams.get('error')
     if (error === 'linkedin_not_configured') {
-      alert('LinkedIn login is not configured. Please add your LinkedIn credentials to .env.local file. See LINKEDIN_SETUP.md for instructions.')
+      alert(
+        'LinkedIn login is not configured. Please add your LinkedIn credentials to .env.local file. See LINKEDIN_SETUP.md for instructions.'
+      )
     }
   }, [searchParams])
 
@@ -108,7 +118,8 @@ export default function Login() {
       router.push('/dashboard')
     } catch (error: unknown) {
       console.error('GitHub login error:', error)
-      const errorMessage = error instanceof Error ? error.message : 'Failed to login with GitHub'
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to login with GitHub'
       alert(`Error: ${errorMessage}`)
     }
   }
@@ -201,7 +212,9 @@ export default function Login() {
         <div className="flex items-center justify-center py-16 px-4">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-unifolio-dark mx-auto mb-4"></div>
-            <p className="text-unifolio-mediumgray">Signing you in automatically...</p>
+            <p className="text-unifolio-mediumgray">
+              Signing you in automatically...
+            </p>
           </div>
         </div>
       ) : (
@@ -335,7 +348,9 @@ export default function Login() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-unifolio-white rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-unifolio-dark">Reset Password</h3>
+              <h3 className="text-xl font-bold text-unifolio-dark">
+                Reset Password
+              </h3>
               <button
                 onClick={() => {
                   setShowForgotPassword(false)
@@ -343,14 +358,25 @@ export default function Login() {
                 }}
                 className="text-unifolio-mediumgray hover:text-unifolio-dark"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
 
             <p className="text-unifolio-mediumgray mb-4">
-              Enter your email address and we&apos;ll send you a link to reset your password.
+              Enter your email address and we&apos;ll send you a link to reset
+              your password.
             </p>
 
             <form onSubmit={handleForgotPassword} className="space-y-4">

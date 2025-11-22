@@ -5,10 +5,11 @@ import SignUpHeader from '../../components/signup/SignUpHeader'
 import SignUpFooter from '../../components/signup/SignUpFooter'
 import { useRouter } from 'next/navigation'
 import { auth, saveUserToDatabase, getUserFromDatabase } from '../firebase'
+import { useSendEmailVerification } from 'react-firebase-hooks/auth'
 import {
-  useSendEmailVerification,
-} from 'react-firebase-hooks/auth'
-import { signInWithCustomToken, sendEmailVerification as firebaseSendEmailVerification } from 'firebase/auth'
+  signInWithCustomToken,
+  sendEmailVerification as firebaseSendEmailVerification,
+} from 'firebase/auth'
 
 const SignUp = () => {
   const router = useRouter()

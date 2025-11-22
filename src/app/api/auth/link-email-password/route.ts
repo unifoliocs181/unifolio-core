@@ -19,7 +19,7 @@ if (!admin.apps.length) {
 export async function POST(request: NextRequest) {
   try {
     const { email, password, fullName } = await request.json()
-    
+
     if (!email || !password) {
       return NextResponse.json(
         { error: 'Email and password are required' },
@@ -31,13 +31,13 @@ export async function POST(request: NextRequest) {
     try {
       // Check if user already exists
       user = await admin.auth().getUserByEmail(email)
-      
+
       // User exists, update with password
       await admin.auth().updateUser(user.uid, {
         password: password,
         displayName: fullName || user.displayName,
       })
-      
+
       console.log(`Password added to existing account for ${email}`)
     } catch (error) {
       // User doesn't exist, create a new one with email/password
@@ -47,19 +47,20 @@ export async function POST(request: NextRequest) {
         displayName: fullName,
         emailVerified: false,
       })
-      
+
       console.log(`New account created for ${email}`)
     }
 
     // Generate custom token for authentication
     const customToken = await admin.auth().createCustomToken(user.uid)
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       customToken,
       uid: user.uid,
       email: user.email,
-      isNewUser: !user.metadata?.creationTime || 
-                 new Date(user.metadata.creationTime).getTime() === new Date().getTime(),
+      isNewUser:
+        !user.metadata?.creationTime ||
+        new Date(user.metadata.creationTime).getTime() === new Date().getTime(),
     })
   } catch (error) {
     console.error('Error linking email/password:', error)
