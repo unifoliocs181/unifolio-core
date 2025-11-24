@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getAuth, GithubAuthProvider, fetchSignInMethodsForEmail } from 'firebase/auth'
 import { getFirestore, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore'
 // TODO: Add SDKs for Firebase products that you want to use
@@ -19,6 +20,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
+export const storage = getStorage(app);
 
 export const auth = getAuth(app)
 export const db = getFirestore(app)
@@ -38,6 +40,13 @@ export interface UserData {
   createdAt: string
   lastSignIn: string
 }
+
+export async function uploadToStorage(file: File, folder: string) {
+  const fileRef = ref(storage, `${folder}/${Date.now()}-${file.name}`);
+  await uploadBytes(fileRef, file); 
+  return await getDownloadURL(fileRef);
+}
+
 
 // Save user data to Firestore
 export const saveUserToDatabase = async (userData: UserData) => {
