@@ -1,17 +1,17 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from 'uploadthing/next'
 
-const f = createUploadthing();
+const f = createUploadthing()
 export const ourFileRouter = {
   pdfUploader: f({
     pdf: {
-      maxFileSize: "16MB",
+      maxFileSize: '16MB',
       maxFileCount: 1,
     },
   }).onUploadComplete(async ({ file }) => {
     return {
-      url: file.ufsUrl, 
-    };
+      url: file.ufsUrl,
+    }
   }),
-} satisfies FileRouter;
+} satisfies FileRouter
 
-export type OurFileRouter = typeof ourFileRouter;
+export type OurFileRouter = typeof ourFileRouter

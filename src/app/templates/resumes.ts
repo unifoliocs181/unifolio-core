@@ -1,9 +1,10 @@
 export const resumeTemplates = [
   {
-    id: "ats",
-    name: "ATS Modern",
-    pdfUrl: "https://y3uiusoam7.ufs.sh/f/6TEVGovXFsmypafqOiB3V5wvkNZ9DYKd6jlhPCsMbXJERzU8",
-	code:String.raw`\documentclass[letterpaper,10pt]{article}
+    id: 'ats',
+    name: 'ATS Modern',
+    pdfUrl:
+      'https://y3uiusoam7.ufs.sh/f/6TEVGovXFsmypafqOiB3V5wvkNZ9DYKd6jlhPCsMbXJERzU8',
+    code: String.raw`\documentclass[letterpaper,10pt]{article}
 
 \usepackage{latexsym}
 \usepackage[empty]{fullpage}
@@ -132,13 +133,14 @@ Passionate AI/ML engineer with a strong background in deep learning, computer vi
   \resumeItem{\textbullet\ TensorFlow Developer Certificate}
 \resumeSubHeadingListEnd
 
-\end{document}`
+\end{document}`,
   },
   {
-    id: "academic",
-    name: "Academic",
-    pdfUrl: "https://y3uiusoam7.ufs.sh/f/6TEVGovXFsmyJRnEa851eo7CkSXODPyq8LAgtEzxlGhsu6ZR",
-	code: String.raw`\documentclass[letterpaper,11pt]{article}
+    id: 'academic',
+    name: 'Academic',
+    pdfUrl:
+      'https://y3uiusoam7.ufs.sh/f/6TEVGovXFsmyJRnEa851eo7CkSXODPyq8LAgtEzxlGhsu6ZR',
+    code: String.raw`\documentclass[letterpaper,11pt]{article}
 
 \usepackage{latexsym}
 \usepackage[empty]{fullpage}
@@ -301,13 +303,14 @@ Passionate AI/ML engineer with a strong background in deep learning, computer vi
 %-------------------------------------
 \end{document}
 
-`
+`,
   },
   {
-    id: "classic",
-    name: "Professional Classic",
-    pdfUrl: "https://y3uiusoam7.ufs.sh/f/6TEVGovXFsmySINBz681LAanzTSNOvociIPkdDsuGRBEhQ5b",
-	code: String.raw`\documentclass[letterpaper,11pt]{article}
+    id: 'classic',
+    name: 'Professional Classic',
+    pdfUrl:
+      'https://y3uiusoam7.ufs.sh/f/6TEVGovXFsmySINBz681LAanzTSNOvociIPkdDsuGRBEhQ5b',
+    code: String.raw`\documentclass[letterpaper,11pt]{article}
 
 \usepackage{latexsym}
 \usepackage[empty]{fullpage}
@@ -594,6 +597,6 @@ Passionate AI/ML engineer with a strong background in deep learning, computer vi
 \vspace{-12pt}
 
 \end{document}
-`
+`,
   },
-];
+]

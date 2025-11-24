@@ -18,7 +18,7 @@ Rules:
 - Output ONLY valid, fully compilable LaTeX.
 - Do not add explanations, comments, or markdown.
 - Keep all formatting EXACTLY as the template defines.
-`;
+`
 export const summarySystemPrompt = `
 Extract all meaningful information from the user's LinkedIn profile.
 
@@ -36,7 +36,7 @@ Rules:
 - Preserve ALL factual details; add nothing new.
 - Output plain text only (no LaTeX, no headings, no bullets).
 - This summary must be complete enough to rebuild a resume.
-`;
+`
 
 export const evaluationSystemPrompt = `
 Evaluate the LaTeX resume.
@@ -54,9 +54,7 @@ Also provide:
 
 Be direct, strict, and detailed.
 Output only the evaluation fields required by the schema.
-`;
-
-
+`
 
 export const improvementSystemPrompt = `
 Improve the LaTeX resume using:
@@ -76,4 +74,4 @@ Your job:
 - Produce clean, consistent, fully compilable LaTeX
 
 Output ONLY the improved LaTeX.
-`;
+`

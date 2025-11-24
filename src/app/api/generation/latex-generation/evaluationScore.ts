@@ -26,7 +26,7 @@ export function isEvaluationPassing(evaluation: Evaluation): boolean {
     resumeRelevance: evaluation.resumeRelevance / 10,
   }
 
-  console.log("Scaled Scores:", scaled)
+  console.log('Scaled Scores:', scaled)
 
   for (const key of Object.keys(scaled) as Array<keyof typeof scaled>) {
     if (scaled[key] < MIN_CATEGORY_SCORE) {
@@ -41,10 +41,10 @@ export function isEvaluationPassing(evaluation: Evaluation): boolean {
   }
 
   const weightedAverage = total
-  console.log("Weighted Average Score:", weightedAverage)
+  console.log('Weighted Average Score:', weightedAverage)
 
   if (Number.isNaN(weightedAverage)) {
-    console.log("Weighted score is NaN — failing iteration.")
+    console.log('Weighted score is NaN — failing iteration.')
     return false
   }
 

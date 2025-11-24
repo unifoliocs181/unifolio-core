@@ -3,19 +3,19 @@ import {
   improvedSchema,
   latexSchema,
   summarySchema,
-} from "./agentic-schema"
-import { openai } from "@ai-sdk/openai"
-import { generateObject } from "ai"
-import { isEvaluationPassing } from "./evaluationScore"
+} from './agentic-schema'
+import { openai } from '@ai-sdk/openai'
+import { generateObject } from 'ai'
+import { isEvaluationPassing } from './evaluationScore'
 import {
   evaluationSystemPrompt,
   improvementSystemPrompt,
   latexSystemPrompt,
   summarySystemPrompt,
-} from "./systemPrompts"
+} from './systemPrompts'
 const baseModels = {
-  generate: openai("o3-mini"),
-  evaluate: openai("o3-mini"),
+  generate: openai('o3-mini'),
+  evaluate: openai('o3-mini'),
 }
 
 export async function runAgenticGenerate(
@@ -24,9 +24,9 @@ export async function runAgenticGenerate(
   jobDescription: string,
   templateLatex: string
 ) {
-  console.time("Total Runtime")
+  console.time('Total Runtime')
 
-  console.time("Initial Generation")
+  console.time('Initial Generation')
   const [latexRes, summaryRes] = await Promise.all([
     generateObject({
       model: baseModels.generate,
@@ -54,15 +54,13 @@ Instructions:
 - Keep all details factual.
 - Produce clean, modern, valid LaTeX code.
 - Output ONLY LaTeX. No comments, no explanations, no markdown, no backticks.
-`
-
-,
+`,
     }),
     generateObject({
       model: baseModels.generate,
       schema: summarySchema,
       system: summarySystemPrompt,
-     prompt: `
+      prompt: `
 Summarize the user's LinkedIn profile using ONLY the information below.
 
 ${profileInfo}
@@ -72,12 +70,10 @@ Your task:
 - Rewrite everything clearly, professionally, and concisely.
 - Include roles, responsibilities, skills, achievements, education, and any present sections.
 - Do NOT invent anything not in the profile.
-`
-
-
+`,
     }),
   ])
-  console.timeEnd("Initial Generation")
+  console.timeEnd('Initial Generation')
 
   let currentLatex = latexRes.object.latex
   const resumeSummary = summaryRes.object.reference_summary
@@ -109,8 +105,7 @@ Instructions:
 - Identify specific issues.
 - Provide actionable improvement suggestions only if there are any.
 - Output ONLY values for the required fields. No extra text.
-`
-
+`,
     })
     console.timeEnd(`Iteration ${i + 1}`)
 
@@ -121,8 +116,8 @@ Instructions:
       consistent: evalObj.consistent,
       resumeRelevance: evalObj.resumeRelevance,
     }
-	console.log(`Evaluation Metrics (Iteration ${i + 1}):`, evalMetrics);
-    if (isEvaluationPassing(evalMetrics)) break;
+    console.log(`Evaluation Metrics (Iteration ${i + 1}):`, evalMetrics)
+    if (isEvaluationPassing(evalMetrics)) break
 
     console.time(`Improvement ${i + 1}`)
     const { object: improvedObj } = await generateObject({
@@ -151,10 +146,10 @@ Current LaTeX Resume:
 ${currentLatex}
 
 Issues Identified by the Evaluation Step:
-${evalObj.specificIssues.join("\n")}
+${evalObj.specificIssues.join('\n')}
 
 Suggested Improvements:
-${evalObj.improvementSuggestions.join("\n")}
+${evalObj.improvementSuggestions.join('\n')}
 
 Your task:
 - Fix EVERY issue listed.
@@ -167,14 +162,13 @@ Your task:
 - Return ONLY the improved LaTeX code.
 
 Output ONLY LaTeX. No comments, markdown, or explanations.
-`
-
+`,
     })
     console.timeEnd(`Improvement ${i + 1}`)
 
     currentLatex = improvedObj.improvedLatex
   }
 
-  console.timeEnd("Total Runtime")
+  console.timeEnd('Total Runtime')
   return { finallatexcode: currentLatex }
 }

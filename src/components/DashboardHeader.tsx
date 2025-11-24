@@ -70,11 +70,11 @@ export default function DashboardHeader({
               Dashboard
             </a>
             <a
-  href="/resumes"
-  className="text-gray-400 hover:text-white transition-colors font-medium"
->
-  My Resumes
-</a>
+              href="/resumes"
+              className="text-gray-400 hover:text-white transition-colors font-medium"
+            >
+              My Resumes
+            </a>
 
             <a
               href="#"

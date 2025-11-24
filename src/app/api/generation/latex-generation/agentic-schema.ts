@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from 'zod'
 export const latexSchema = z.object({ latex: z.string().min(1) })
 export const summarySchema = z.object({ reference_summary: z.string().min(1) })
 export const evaluationSchema = z.object({

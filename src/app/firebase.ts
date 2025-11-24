@@ -1,9 +1,21 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app'
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getAuth, GithubAuthProvider, fetchSignInMethodsForEmail } from 'firebase/auth'
-import { getFirestore, doc, setDoc, getDoc, deleteDoc,updateDoc, arrayRemove, arrayUnion } from 'firebase/firestore'
-
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import {
+  getAuth,
+  GithubAuthProvider,
+  fetchSignInMethodsForEmail,
+} from 'firebase/auth'
+import {
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  deleteDoc,
+  updateDoc,
+  arrayRemove,
+  arrayUnion,
+} from 'firebase/firestore'
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -12,10 +24,10 @@ import { getFirestore, doc, setDoc, getDoc, deleteDoc,updateDoc, arrayRemove, ar
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 
 export interface ResumeEntry {
-  id: string;      
-  name: string;    
-  url: string;      
-  createdAt: number; 
+  id: string
+  name: string
+  url: string
+  createdAt: number
 }
 
 const firebaseConfig = {
@@ -30,7 +42,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-export const storage = getStorage(app);
+export const storage = getStorage(app)
 
 export const auth = getAuth(app)
 export const db = getFirestore(app)
@@ -49,15 +61,14 @@ export interface UserData {
   agreeToTerms: boolean
   createdAt: string
   lastSignIn: string
-  resumes?: ResumeEntry[]; 
+  resumes?: ResumeEntry[]
 }
 
 export async function uploadToStorage(file: File, folder: string) {
-  const fileRef = ref(storage, `${folder}/${Date.now()}-${file.name}`);
-  await uploadBytes(fileRef, file); 
-  return await getDownloadURL(fileRef);
+  const fileRef = ref(storage, `${folder}/${Date.now()}-${file.name}`)
+  await uploadBytes(fileRef, file)
+  return await getDownloadURL(fileRef)
 }
-
 
 // Save user data to Firestore
 export const saveUserToDatabase = async (userData: UserData) => {
@@ -70,63 +81,62 @@ export const saveUserToDatabase = async (userData: UserData) => {
     throw error
   }
 }
-export async function addResumeLink(
-  uid: string,
-  name: string,
-  url: string
-) {
-  const userRef = doc(db, "users", uid);
+export async function addResumeLink(uid: string, name: string, url: string) {
+  const userRef = doc(db, 'users', uid)
 
   const entry = {
     id: crypto.randomUUID(),
     name,
     url,
-    createdAt: Date.now()
-  };
+    createdAt: Date.now(),
+  }
 
   await updateDoc(userRef, {
-    resumes: arrayUnion(entry)
-  });
+    resumes: arrayUnion(entry),
+  })
 
-  console.log("Resume saved:", entry);
+  console.log('Resume saved:', entry)
 }
 export async function deleteResumeLink(uid: string, id: string) {
   try {
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, 'users', uid)
 
     // Load existing
-    const data = await getUserFromDatabase(uid);
-    const current = data?.resumes || [];
+    const data = await getUserFromDatabase(uid)
+    const current = data?.resumes || []
 
     // Filter out the one with matching ID
-    const updated = current.filter((r: any) => r.id !== id);
+    const updated = current.filter((r: any) => r.id !== id)
 
     await updateDoc(userRef, {
       resumes: updated,
-    });
+    })
 
-    console.log("Resume deleted:", id);
+    console.log('Resume deleted:', id)
   } catch (error) {
-    console.error("Error deleting resume:", error);
+    console.error('Error deleting resume:', error)
   }
 }
 
-
-export async function renameResume(uid: string, resumeId: string, newName: string) {
+export async function renameResume(
+  uid: string,
+  resumeId: string,
+  newName: string
+) {
   try {
-    const userRef = doc(db, "users", uid);
+    const userRef = doc(db, 'users', uid)
 
-    const data = await getUserFromDatabase(uid);
-    const resumes = data?.resumes || [];
+    const data = await getUserFromDatabase(uid)
+    const resumes = data?.resumes || []
     const updated = resumes.map((r: any) =>
       r.id === resumeId ? { ...r, name: newName } : r
-    );
+    )
 
-    await updateDoc(userRef, { resumes: updated });
+    await updateDoc(userRef, { resumes: updated })
 
-    console.log("Resume renamed:", resumeId, "→", newName);
+    console.log('Resume renamed:', resumeId, '→', newName)
   } catch (error) {
-    console.error("Error renaming resume:", error);
+    console.error('Error renaming resume:', error)
   }
 }
 

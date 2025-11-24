@@ -1,61 +1,59 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 import {
   auth,
   getUserFromDatabase,
   deleteResumeLink,
   renameResume,
   ResumeEntry,
-} from "../firebase";
-import { useAuthState } from "react-firebase-hooks/auth";
+} from '../firebase'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
-import DashboardHeader from "../../components/DashboardHeader";
-import DashboardFooter from "../../components/DashboardFooter";
+import DashboardHeader from '../../components/DashboardHeader'
+import DashboardFooter from '../../components/DashboardFooter'
 
 export default function ResumesPage() {
-  const [user, loading] = useAuthState(auth);
-  const [resumes, setResumes] = useState<ResumeEntry[]>([]);
-  const [loadingResumes, setLoadingResumes] = useState(true);
+  const [user, loading] = useAuthState(auth)
+  const [resumes, setResumes] = useState<ResumeEntry[]>([])
+  const [loadingResumes, setLoadingResumes] = useState(true)
 
-  const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [newName, setNewName] = useState("");
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [newName, setNewName] = useState('')
 
   // Load resumes
   useEffect(() => {
-    if (!user) return;
+    if (!user) return
 
-    (async () => {
-      const data = await getUserFromDatabase(user.uid);
-      setResumes(data?.resumes || []);
-      setLoadingResumes(false);
-    })();
-  }, [user]);
+    ;(async () => {
+      const data = await getUserFromDatabase(user.uid)
+      setResumes(data?.resumes || [])
+      setLoadingResumes(false)
+    })()
+  }, [user])
 
   const handleDelete = async (id: string) => {
-    if (!user) return;
+    if (!user) return
 
-    await deleteResumeLink(user.uid, id);
+    await deleteResumeLink(user.uid, id)
 
-    setResumes((prev) => prev.filter((r) => r.id !== id));
-  };
+    setResumes((prev) => prev.filter((r) => r.id !== id))
+  }
 
   const handleRename = async (id: string) => {
-    if (!user || !newName.trim()) return;
+    if (!user || !newName.trim()) return
 
-    await renameResume(user.uid, id, newName.trim());
+    await renameResume(user.uid, id, newName.trim())
 
     setResumes((prev) =>
-      prev.map((r) =>
-        r.id === id ? { ...r, name: newName.trim() } : r
-      )
-    );
+      prev.map((r) => (r.id === id ? { ...r, name: newName.trim() } : r))
+    )
 
-    setRenamingId(null);
-    setNewName("");
-  };
+    setRenamingId(null)
+    setNewName('')
+  }
 
-  if (loading) return <div className="text-white p-10">Loading...</div>;
+  if (loading) return <div className="text-white p-10">Loading...</div>
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
@@ -120,8 +118,8 @@ export default function ResumesPage() {
 
                     <button
                       onClick={() => {
-                        setRenamingId(resume.id);
-                        setNewName(resume.name);
+                        setRenamingId(resume.id)
+                        setNewName(resume.name)
                       }}
                       className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded"
                     >
@@ -144,5 +142,5 @@ export default function ResumesPage() {
 
       <DashboardFooter />
     </div>
-  );
+  )
 }
