@@ -8,20 +8,21 @@ import { openai } from "@ai-sdk/openai"
 import { generateObject } from "ai"
 import { isEvaluationPassing } from "./evaluationScore"
 import {
-	  evaluationSystemPrompt,
+  evaluationSystemPrompt,
   improvementSystemPrompt,
   latexSystemPrompt,
   summarySystemPrompt,
 } from "./systemPrompts"
 const baseModels = {
-  generate: openai("gpt-4o-mini"),
-  evaluate: openai("gpt-3.5-turbo"),
+  generate: openai("o3-mini"),
+  evaluate: openai("o3-mini"),
 }
 
 export async function runAgenticGenerate(
   profileInfo: string,
   currentResume: string,
   jobDescription: string,
+  templateLatex: string
 ) {
   console.time("Total Runtime")
 
@@ -32,7 +33,7 @@ export async function runAgenticGenerate(
       schema: latexSchema,
       system: latexSystemPrompt,
       prompt: `
-Using the information below, generate an ATS-friendly, professional LaTeX resume.
+Using the information below, generate an ATS-friendly, professional LaTeX resume. Use ONLY the information provided below and strictly use the template provided. Do NOT fabricate any experience, skills, or dates.
 
 LinkedIn Profile Information:
 ${profileInfo}
@@ -42,6 +43,9 @@ ${currentResume}
 
 Job Description:
 ${jobDescription}
+
+Template to Be Used:
+${templateLatex}
 
 Instructions:
 - Combine LinkedIn + old resume information into one unified resume.
@@ -68,8 +72,6 @@ Your task:
 - Rewrite everything clearly, professionally, and concisely.
 - Include roles, responsibilities, skills, achievements, education, and any present sections.
 - Do NOT invent anything not in the profile.
-- Do NOT include formatting, LaTeX, bullet symbols, or commentary.
-- Output ONLY the summary text. No headings, no labels, no extra explanation.
 `
 
 
@@ -99,10 +101,13 @@ ${resumeSummary}
 Job Description:
 ${jobDescription}
 
+Template to be Used:
+${templateLatex}
+
 Instructions:
 - Score each category from 1 to 10.
 - Identify specific issues.
-- Provide actionable improvement suggestions.
+- Provide actionable improvement suggestions only if there are any.
 - Output ONLY values for the required fields. No extra text.
 `
 
@@ -116,16 +121,30 @@ Instructions:
       consistent: evalObj.consistent,
       resumeRelevance: evalObj.resumeRelevance,
     }
-    if (isEvaluationPassing(evalMetrics)) break
+	console.log(`Evaluation Metrics (Iteration ${i + 1}):`, evalMetrics);
+    if (isEvaluationPassing(evalMetrics)) break;
 
     console.time(`Improvement ${i + 1}`)
     const { object: improvedObj } = await generateObject({
       model: baseModels.evaluate,
       schema: improvedSchema,
       system: improvementSystemPrompt,
-      prompt: `You are improving a professional LaTeX resume based on feedback.
+      prompt: `
+You are improving a professional LaTeX resume based on real user data.
 
-Profile Summary (derived from LinkedIn profile):
+Raw LinkedIn Profile Information:
+${profileInfo}
+
+Raw Old Resume Text:
+${currentResume}
+
+Job Description:
+${jobDescription}
+
+Template to be Used:
+${templateLatex}
+
+LinkedIn Summary (derived from LinkedIn profile):
 ${resumeSummary}
 
 Current LaTeX Resume:
@@ -140,15 +159,16 @@ ${evalObj.improvementSuggestions.join("\n")}
 Your task:
 - Fix EVERY issue listed.
 - Apply ALL improvement suggestions.
-- Improve formatting consistency, clarity, structure, and LaTeX quality.
-- Ensure content reflects ONLY information present in the input materials.
-- Strengthen impact, readability, and ATS-friendliness.
-- Maintain a clean, modern, structured resume layout.
-- Preserve valid, compile-ready LaTeX.
-- Do NOT add explanations, comments, markdown, or code fences.
-- Your output MUST be **only the improved LaTeX code**.
+- Use ONLY information from LinkedIn, the old resume, and the job description.
+- Do NOT invent or hallucinate anything new.
+- Strengthen clarity, impact, correctness, and job alignment.
+- Preserve a clean, modern, valid LaTeX structure.
+- Ensure result is ATS-friendly and strictly factual.
+- Return ONLY the improved LaTeX code.
 
-Return ONLY LaTeX. No extra text.`
+Output ONLY LaTeX. No comments, markdown, or explanations.
+`
+
     })
     console.timeEnd(`Improvement ${i + 1}`)
 

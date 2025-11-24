@@ -5,7 +5,7 @@ export const ourFileRouter = {
   pdfUploader: f({
     pdf: {
       maxFileSize: "16MB",
-      maxFileCount: 2,
+      maxFileCount: 1,
     },
   }).onUploadComplete(async ({ file }) => {
     return {
