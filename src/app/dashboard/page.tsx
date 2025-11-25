@@ -98,7 +98,7 @@ export default function Dashboard() {
 
     const agentData = await agentResponse.json()
     if (!agentData.success) {
-      alert('Resume generation failed.')
+      alert('Resume generation failed. Please try again.')
       setIsProcessing(false)
       return
     }

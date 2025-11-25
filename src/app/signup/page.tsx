@@ -103,7 +103,7 @@ const SignUp = () => {
       alert(
         isNewUser
           ? 'Account created successfully! Please check your email to verify your account.'
-          : 'Email/password added to your existing account! Please check your email to verify.'
+          : 'Email/password added to your account! Please check your email to verify.'
       )
       router.push('/login')
     } catch (error: unknown) {
