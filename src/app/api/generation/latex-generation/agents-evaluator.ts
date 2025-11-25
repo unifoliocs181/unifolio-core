@@ -33,7 +33,7 @@ export async function runAgenticGenerate(
       schema: latexSchema,
       system: latexSystemPrompt,
       prompt: `
-Using the information below, generate an ATS-friendly, professional LaTeX resume. Use ONLY the information provided below and strictly use the template provided. Do NOT fabricate any experience, skills, or dates.
+Using the information below, generate an ATS-friendly, professional LaTeX resume. Use ONLY the information provided below and strictly use the template provided. Do NOT fabricate any experience, skills, or dates. Make sure the LaTeX code compiles without errors.
 
 LinkedIn Profile Information:
 ${profileInfo}
@@ -52,7 +52,7 @@ Instructions:
 - Tailor the content toward the job description.
 - Improve clarity, phrasing, impact, and structure.
 - Keep all details factual.
-- Produce clean, modern, valid LaTeX code.
+- Stick to the template's formatting and structure exactly, if data is missing for a section/field, remove it cleanly and make changes only where necessary.
 - Output ONLY LaTeX. No comments, no explanations, no markdown, no backticks.
 `,
     }),
@@ -78,7 +78,7 @@ Your task:
   let currentLatex = latexRes.object.latex
   const resumeSummary = summaryRes.object.reference_summary
 
-  const MAX_ITER = 2
+  const MAX_ITER = 1 // For testing
   for (let i = 0; i < MAX_ITER; i++) {
     console.time(`Iteration ${i + 1}`)
     const { object: evalObj } = await generateObject({
@@ -111,10 +111,10 @@ Instructions:
 
     const evalMetrics = {
       qualityScore: evalObj.qualityScore,
-      clean: evalObj.clean,
-      professional: evalObj.professional,
-      consistent: evalObj.consistent,
+      formatting: evalObj.formatting,
       resumeRelevance: evalObj.resumeRelevance,
+      consistent: evalObj.consistent,
+      latexCorrectness: evalObj.latexCorrectness,
     }
     console.log(`Evaluation Metrics (Iteration ${i + 1}):`, evalMetrics)
     if (isEvaluationPassing(evalMetrics)) break

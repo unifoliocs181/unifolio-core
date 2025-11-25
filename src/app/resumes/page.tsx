@@ -24,7 +24,6 @@ export default function ResumesPage() {
   // Load resumes
   useEffect(() => {
     if (!user) return
-
     ;(async () => {
       const data = await getUserFromDatabase(user.uid)
       setResumes(data?.resumes || [])

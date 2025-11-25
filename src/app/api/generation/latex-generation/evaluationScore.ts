@@ -1,7 +1,7 @@
 export type Evaluation = {
   qualityScore: number
-  clean: number
-  professional: number
+  formatting: number
+  latexCorrectness: number
   consistent: number
   resumeRelevance: number
 }
@@ -11,8 +11,8 @@ const MIN_CATEGORY_SCORE = 0.6
 
 const weights = {
   qualityScore: 0.25,
-  clean: 0.15,
-  professional: 0.2,
+  formatting: 0.15,
+  latexCorrectness: 0.2,
   consistent: 0.2,
   resumeRelevance: 0.2,
 }
@@ -20,8 +20,8 @@ const weights = {
 export function isEvaluationPassing(evaluation: Evaluation): boolean {
   const scaled = {
     qualityScore: evaluation.qualityScore / 10,
-    clean: evaluation.clean / 10,
-    professional: evaluation.professional / 10,
+    formatting: evaluation.formatting / 10,
+    latexCorrectness: evaluation.latexCorrectness / 10,
     consistent: evaluation.consistent / 10,
     resumeRelevance: evaluation.resumeRelevance / 10,
   }
