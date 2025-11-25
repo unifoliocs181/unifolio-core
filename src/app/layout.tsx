@@ -15,6 +15,9 @@ export const metadata = {
   title: 'Unifolio - Make Your Resume',
   description:
     'Create and customize your resume effortlessly with Unifolio just by linking your LinkedIn. Choose from a variety of templates and styles to showcase your skills and experience.',
+  icons: {
+    icon: '/1763018776886.jpeg',
+  },
 }
 
 export default function RootLayout({
