@@ -1,5 +1,5 @@
 'use client'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { auth } from '../app/firebase'
 import { useState, useRef, useEffect } from 'react'
 import { User } from 'firebase/auth'
@@ -14,6 +14,7 @@ export default function DashboardHeader({
   userName,
 }: DashboardHeaderProps) {
   const router = useRouter()
+  const pathname = usePathname()
   const [showMenu, setShowMenu] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -65,23 +66,24 @@ export default function DashboardHeader({
           <nav className="hidden md:flex space-x-8">
             <a
               href="/dashboard"
-              className="text-white hover:text-gray-300 transition-colors font-medium"
+              className={`font-medium transition-colors ${pathname === '/dashboard'
+                  ? 'text-white'
+                  : 'text-gray-400 hover:text-white'
+                }`}
             >
               Dashboard
             </a>
             <a
               href="/resumes"
-              className="text-gray-400 hover:text-white transition-colors font-medium"
+              className={`font-medium transition-colors ${pathname === '/resumes'
+                  ? 'text-white'
+                  : 'text-gray-400 hover:text-white'
+                }`}
             >
               My Resumes
             </a>
 
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors font-medium"
-            >
-              Settings
-            </a>
+            
           </nav>
 
           <div className="relative" ref={menuRef}>

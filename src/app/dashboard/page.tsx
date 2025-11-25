@@ -387,7 +387,10 @@ export default function Dashboard() {
 
             <div className="mt-6 flex justify-between">
               <button
-                onClick={() => setShowPdfModal(false)}
+                onClick={() => {
+                  setShowPdfModal(false)
+                  window.location.reload()
+                }}
                 className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
               >
                 Close

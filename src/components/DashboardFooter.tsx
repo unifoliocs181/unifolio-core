@@ -7,27 +7,6 @@ export default function DashboardFooter() {
             Unifolio
           </div>
 
-          <div className="flex space-x-6 text-sm">
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Help
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Privacy
-            </a>
-            <a
-              href="#"
-              className="text-gray-400 hover:text-white transition-colors"
-            >
-              Terms
-            </a>
-          </div>
-
           <div className="text-sm text-gray-400">
             © 2025 Unifolio. All rights reserved.
           </div>
