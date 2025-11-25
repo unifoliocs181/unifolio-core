@@ -10,9 +10,9 @@ import {
 } from '../firebase'
 import { useSignInWithEmailAndPassword } from 'react-firebase-hooks/auth'
 import { signInWithPopup, sendPasswordResetEmail } from 'firebase/auth'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 
-export default function Login() {
+function LoginContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [signInWithEmailAndPassword] = useSignInWithEmailAndPassword(auth)
@@ -418,5 +418,13 @@ export default function Login() {
         </div>
       )}
     </div>
+  )
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="text-center"><p>Loading...</p></div></div>}>
+      <LoginContent />
+    </Suspense>
   )
 }

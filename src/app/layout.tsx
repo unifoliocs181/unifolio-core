@@ -1,9 +1,8 @@
-// app/auth/layout.tsx
 import './globals.css'
-// import Footer from "@/components/Footer";
 import { Montserrat } from 'next/font/google'
-// import { ReactQueryClientProvider } from "@/utils/react-query";
-// import LoginHeader from "@/components/LoginHeader"; // ensure this paths matches your project structure
+import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
+import { extractRouterConfig } from 'uploadthing/server'
+import { ourFileRouter } from './api/uploadthing/core'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -18,14 +17,17 @@ export const metadata = {
     'Create and customize your resume effortlessly with Unifolio just by linking your LinkedIn. Choose from a variety of templates and styles to showcase your skills and experience.',
 }
 
-export default function AuthLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
   return (
     <html lang="en">
-      <body className={montserrat.className}>{children}</body>
+      <body className={montserrat.className}>
+        <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
+        {children}
+      </body>
     </html>
   )
 }

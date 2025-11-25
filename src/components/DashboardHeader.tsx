@@ -62,6 +62,28 @@ export default function DashboardHeader({
             </a>
           </div>
 
+          <nav className="hidden md:flex space-x-8">
+            <a
+              href="/dashboard"
+              className="text-white hover:text-gray-300 transition-colors font-medium"
+            >
+              Dashboard
+            </a>
+            <a
+              href="/resumes"
+              className="text-gray-400 hover:text-white transition-colors font-medium"
+            >
+              My Resumes
+            </a>
+
+            <a
+              href="#"
+              className="text-gray-400 hover:text-white transition-colors font-medium"
+            >
+              Settings
+            </a>
+          </nav>
+
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu(!showMenu)}
