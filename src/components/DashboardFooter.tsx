@@ -6,7 +6,6 @@ export default function DashboardFooter() {
           <div className="text-white font-semibold font-unifolio-montserrat">
             Unifolio
           </div>
-
           <div className="text-sm text-gray-400">
             © 2025 Unifolio. All rights reserved.
           </div>
