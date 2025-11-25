@@ -18,34 +18,15 @@ const LoginHeader = () => {
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-8">
           <a
-            href="#"
-            className="text-unifolio-gray hover:text-unifolio-white transition-colors"
-          >
-            Features
-          </a>
-          <a
-            href="#"
+            href="/about"
             className="text-unifolio-gray hover:text-unifolio-white transition-colors"
           >
             About
           </a>
-          <a
-            href="#"
-            className="text-unifolio-gray hover:text-unifolio-white transition-colors"
-          >
-            Pricing
-          </a>
         </nav>
 
         {/* Right Section */}
-        <div className="flex items-center gap-4">
-          <button className="text-unifolio-gray hover:text-unifolio-white transition-colors px-4 py-2">
-            Sign In
-          </button>
-          <button className="bg-unifolio-gray text-unifolio-dark px-6 py-2 rounded-lg font-semibold hover:bg-unifolio-lightgray transition-colors">
-            Get Started
-          </button>
-        </div>
+        
       </div>
     </div>
   )

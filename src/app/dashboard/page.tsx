@@ -2,6 +2,7 @@
 
 import DashboardHeader from '../../components/DashboardHeader'
 import DashboardFooter from '../../components/DashboardFooter'
+import AnimatedGenerateButton from '../../components/ui/animated-generate-button'
 import { useRouter } from 'next/navigation'
 import { auth, getUserFromDatabase, UserData } from '../firebase'
 import { useAuthState } from 'react-firebase-hooks/auth'
@@ -265,7 +266,7 @@ export default function Dashboard() {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <button
+          <AnimatedGenerateButton
             onClick={() => {
               const missing: string[] = []
 
@@ -282,10 +283,11 @@ export default function Dashboard() {
 
               setShowTemplateModal(true)
             }}
-            className="bg-gray-900 text-white px-12 py-4 rounded-lg font-semibold border border-gray-700 hover:bg-gray-950"
-          >
-            Generate Resume
-          </button>
+            labelIdle="Generate"
+            labelActive="Generating"
+            generating={isProcessing}
+            highlightHueDeg={120}
+          />
         </div>
       </main>
 
@@ -358,11 +360,10 @@ export default function Dashboard() {
                   setShowTemplateModal(false)
                   handleGenerateResume(selectedTemplate!)
                 }}
-                className={`px-4 py-2 rounded-lg font-semibold ${
-                  selectedTemplate
-                    ? 'bg-green-500 text-white'
-                    : 'bg-gray-600 text-gray-400'
-                }`}
+                className={`px-4 py-2 rounded-lg font-semibold ${selectedTemplate
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-600 text-gray-400'
+                  }`}
               >
                 Use This Template
               </button>
@@ -386,7 +387,10 @@ export default function Dashboard() {
 
             <div className="mt-6 flex justify-between">
               <button
-                onClick={() => setShowPdfModal(false)}
+                onClick={() => {
+                  setShowPdfModal(false)
+                  window.location.reload()
+                }}
                 className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600"
               >
                 Close

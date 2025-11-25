@@ -17,24 +17,14 @@ export default function Header() {
 
           {/* Navigation Links */}
           <nav className="hidden md:flex space-x-8">
-            <a
-              href="#features"
-              className="text-unifolio-mediumgray hover:text-unifolio-dark transition-colors font-medium"
-            >
-              Features
-            </a>
-            <a
-              href="#about"
+           
+            <Link
+              href="/about"
               className="text-unifolio-mediumgray hover:text-unifolio-dark transition-colors font-medium"
             >
               About
-            </a>
-            <a
-              href="#contact"
-              className="text-unifolio-mediumgray hover:text-unifolio-dark transition-colors font-medium"
-            >
-              Contact
-            </a>
+            </Link>
+            
           </nav>
 
           {/* Auth Buttons */}
