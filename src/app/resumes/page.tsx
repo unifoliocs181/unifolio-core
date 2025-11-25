@@ -12,24 +12,46 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 
 import DashboardHeader from '../../components/DashboardHeader'
 import DashboardFooter from '../../components/DashboardFooter'
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from '../../components/ui/pagination'
+import { usePagination } from '../../components/hooks/use-pagination'
 
 export default function ResumesPage() {
   const [user, loading] = useAuthState(auth)
   const [resumes, setResumes] = useState<ResumeEntry[]>([])
   const [loadingResumes, setLoadingResumes] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
 
   const [renamingId, setRenamingId] = useState<string | null>(null)
   const [newName, setNewName] = useState('')
+
+  const itemsPerPage = 2
+  const totalPages = Math.ceil(resumes.length / itemsPerPage)
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    currentPage,
+    totalPages,
+    paginationItemsToDisplay: 7,
+  })
+
+  const paginatedResumes = resumes.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  )
 
   // Load resumes
   useEffect(() => {
     if (!user) return
 
-    ;(async () => {
-      const data = await getUserFromDatabase(user.uid)
-      setResumes(data?.resumes || [])
-      setLoadingResumes(false)
-    })()
+      ; (async () => {
+        const data = await getUserFromDatabase(user.uid)
+        setResumes(data?.resumes || [])
+        setLoadingResumes(false)
+      })()
   }, [user])
 
   const handleDelete = async (id: string) => {
@@ -67,76 +89,155 @@ export default function ResumesPage() {
         ) : resumes.length === 0 ? (
           <p className="text-gray-500">You have no saved resumes yet.</p>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {resumes.map((resume) => (
-              <div
-                key={resume.id}
-                className="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg"
-              >
-                {/* PDF Preview */}
-                <iframe
-                  src={resume.url}
-                  className="w-full h-[450px] rounded border border-gray-700"
-                />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {paginatedResumes.map((resume) => (
+                <div
+                  key={resume.id}
+                  className="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg"
+                >
+                  {/* PDF Preview */}
+                  <iframe
+                    src={resume.url}
+                    className="w-full h-[450px] rounded border border-gray-700"
+                  />
 
-                {/* Resume name */}
-                <p className="text-gray-200 text-lg font-semibold mt-4">
-                  {resume.name}
-                </p>
+                  {/* Resume name */}
+                  <p className="text-gray-200 text-lg font-semibold mt-4">
+                    {resume.name}
+                  </p>
 
-                {/* Rename Mode */}
-                {renamingId === resume.id ? (
-                  <div className="flex gap-3 mt-4">
-                    <input
-                      type="text"
-                      value={newName}
-                      onChange={(e) => setNewName(e.target.value)}
-                      className="flex-1 px-3 py-1 bg-gray-900 text-white border border-gray-700 rounded"
-                    />
-                    <button
-                      onClick={() => handleRename(resume.id)}
-                      className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
-                    >
-                      Save
-                    </button>
-                    <button
-                      onClick={() => setRenamingId(null)}
-                      className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                ) : (
-                  <div className="flex justify-between mt-5">
-                    <a
-                      href={resume.url}
-                      target="_blank"
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
-                    >
-                      View
-                    </a>
+                  {/* Rename Mode */}
+                  {renamingId === resume.id ? (
+                    <div className="flex gap-3 mt-4">
+                      <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="flex-1 px-3 py-1 bg-gray-900 text-white border border-gray-700 rounded"
+                      />
+                      <button
+                        onClick={() => handleRename(resume.id)}
+                        className="px-4 py-2 bg-emerald-600 text-white rounded hover:bg-emerald-700"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => setRenamingId(null)}
+                        className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex justify-between mt-5">
+                      <a
+                        href={resume.url}
+                        target="_blank"
+                        className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                      >
+                        View
+                      </a>
 
-                    <button
-                      onClick={() => {
-                        setRenamingId(resume.id)
-                        setNewName(resume.name)
-                      }}
-                      className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded"
-                    >
-                      Rename
-                    </button>
+                      <button
+                        onClick={() => {
+                          setRenamingId(resume.id)
+                          setNewName(resume.name)
+                        }}
+                        className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded"
+                      >
+                        Rename
+                      </button>
 
-                    <button
-                      onClick={() => handleDelete(resume.id)}
-                      className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
+                      <button
+                        onClick={() => handleDelete(resume.id)}
+                        className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <div className="mt-10">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationLink
+                        onClick={() =>
+                          setCurrentPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        className={
+                          currentPage === 1
+                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                            : 'cursor-pointer'
+                        }
+                      >
+                        ←
+                      </PaginationLink>
+                    </PaginationItem>
+
+                    {showLeftEllipsis && (
+                      <>
+                        <PaginationItem>
+                          <PaginationLink onClick={() => setCurrentPage(1)}>
+                            1
+                          </PaginationLink>
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      </>
+                    )}
+
+                    {pages.map((page) => (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          onClick={() => setCurrentPage(page)}
+                          isActive={currentPage === page}
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+
+                    {showRightEllipsis && (
+                      <>
+                        <PaginationItem>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                        <PaginationItem>
+                          <PaginationLink onClick={() => setCurrentPage(totalPages)}>
+                            {totalPages}
+                          </PaginationLink>
+                        </PaginationItem>
+                      </>
+                    )}
+
+                    <PaginationItem>
+                      <PaginationLink
+                        onClick={() =>
+                          setCurrentPage((prev) =>
+                            Math.min(prev + 1, totalPages)
+                          )
+                        }
+                        className={
+                          currentPage === totalPages
+                            ? 'pointer-events-none opacity-50 cursor-not-allowed'
+                            : 'cursor-pointer'
+                        }
+                      >
+                        →
+                      </PaginationLink>
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
       </main>
 
