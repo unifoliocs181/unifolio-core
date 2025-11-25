@@ -10,7 +10,7 @@ if (!admin.apps.length) {
       clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
       privateKey: privateKey ? privateKey.replace(/\\n/g, '\n') : undefined,
     }
-    
+
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
     })

@@ -28,6 +28,7 @@ When applying for jobs, a common issue that comes up is trying to tailor your re
 The core functionality of our app will be generating a resume and portfolio based on scraping data from a user’s LinkedIn and Github profiles with their permission.
 
 Once the user allows access to their profiles, the app will make API requests to LinkedIn and GitHub and gather data from their profiles. The LinkedIn data will be useful for the following:
+
 - The user’s name and contact information, if allowed by the user
 - Experience section, including job history and projects
 - Education section, including degrees and certifications
@@ -36,6 +37,7 @@ Once the user allows access to their profiles, the app will make API requests to
 - The GitHub data will primarily be useful for the project section of a resume, as well as most of the portfolio information.
 
 The resume will be generated in LaTeX and can be downloaded as a PDF. We also aim to provide the additional features:
+
 - Letting users choose which information to include in the document
 - Condensing the PDF into one single page, although this may require users to omit certain info or entire sections
 - Automatically sort sections by most relevant and most recent, depending on what kind of job the user wants to apply to
@@ -63,8 +65,9 @@ The class diagram below describes how user information will be represented and u
 
 <img width="1331" height="598" alt="CS180 Class Diagram drawio (2)" src="https://github.com/user-attachments/assets/d56baffe-7089-4513-a305-4f6d737430f2" />
 
-Here, the Unifolio database will contain all user information, including login info, passwords, and their resume information. Each user will have exactly one resume object to hold all their information (though different resumes may be generated from this object due to wanting to prioritize certain info over others). The resume class itself is made up of three components: the Header, the Sections, and SkillTypes. 
-- The Header will work with basic identifying info, contacts, and links to a user’s profiles. 
+Here, the Unifolio database will contain all user information, including login info, passwords, and their resume information. Each user will have exactly one resume object to hold all their information (though different resumes may be generated from this object due to wanting to prioritize certain info over others). The resume class itself is made up of three components: the Header, the Sections, and SkillTypes.
+
+- The Header will work with basic identifying info, contacts, and links to a user’s profiles.
 - The Section class is a general (but not abstract) class that contains the section title and associated Listings. The Listing is also a general class that specifies its title, start and end dates, and descriptions.
 - The SkillType is a special part of the resume that can hold a list of associated skills. The resume itself holds a vector of SkillTypes that make up the Skills section of any typical resume.
 - Another detail to mention is the Education class, which inherits from Listing but also includes academic information such as the degree, major, and GPA.

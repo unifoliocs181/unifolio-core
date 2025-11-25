@@ -13,6 +13,7 @@ Your job:
 - Reword bullets to be concise, action-driven, and quantifiable.
 - Remove irrelevant or duplicated information.
 - Do NOT invent new experience.
+- Make sure latex compiles without errors.
 
 Rules:
 - Output ONLY valid, fully compilable LaTeX.
@@ -42,15 +43,15 @@ export const evaluationSystemPrompt = `
 Evaluate the LaTeX resume.
 
 Score (1–10):
-- Quality of content
-- Cleanliness of LaTeX code
-- Professional formatting
-- Relevance to the job description
-- Consistency and factual accuracy
+- Quality of overall
+- Professional formatting based on the template
+- Relevance with respect to the job description
+- Consistency and factual accuracy with compared to the LinkedIn summary and old resume
+- Latex syntax correctness
 
 Also provide:
-- Specific issues you find
-- Actionable improvement suggestions
+- Specific issues/latex errors you find
+- Actionable improvement suggestions/fixes
 
 Be direct, strict, and detailed.
 Output only the evaluation fields required by the schema.
